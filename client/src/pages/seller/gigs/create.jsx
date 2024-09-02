@@ -5,15 +5,14 @@ import axios from "axios";
 import { useRouter } from "next/router";
 import React, { useState } from "react";
 import { useCookies } from "react-cookie";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 function CreateGigs() {
   const [cookies] = useCookies();
   const router = useRouter();
-  const inputClassName =
-    "block p-4 w-full text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50  focus:ring-blue-500 focus:border-blue-500";
-  const labelClassName = "mb-2 text-lg font-medium text-gray-900  ";
   const [files, setFile] = useState([]);
-  const [features, setfeatures] = useState([]);
+  const [features, setFeatures] = useState([]);
   const [data, setData] = useState({
     title: "",
     category: "",
@@ -24,10 +23,17 @@ function CreateGigs() {
     price: 0,
     shortDesc: "",
   });
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+
+  const inputClassName =
+    "block p-4 w-full text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500";
+  const labelClassName = "mb-2 text-lg font-medium text-gray-900";
+
   const removeFeature = (index) => {
     const clonedFeatures = [...features];
     clonedFeatures.splice(index, 1);
-    setfeatures(clonedFeatures);
+    setFeatures(clonedFeatures);
   };
 
   const handleChange = (e) => {
@@ -36,14 +42,14 @@ function CreateGigs() {
 
   const addFeature = () => {
     if (data.feature) {
-      setfeatures([...features, data.feature]);
+      setFeatures([...features, data.feature]);
       setData({ ...data, feature: "" });
     }
   };
-  const addGig = async () => {
-    const { category, description, price, revisions, time, title, shortDesc } =
-      data;
-    if (
+
+  const validateFields = () => {
+    const { category, description, price, revisions, time, title, shortDesc } = data;
+    return (
       category &&
       description &&
       title &&
@@ -53,39 +59,65 @@ function CreateGigs() {
       shortDesc.length &&
       revisions > 0 &&
       time > 0
-    ) {
+    );
+  };
+
+  const addGig = async () => {
+    setLoading(true);
+    setError(null);
+
+    if (validateFields()) {
       const formData = new FormData();
       files.forEach((file) => formData.append("images", file));
       const gigData = {
-        title,
-        description,
-        category,
-        features,
-        price,
-        revisions,
-        time,
-        shortDesc,
+        title: data.title,
+        description: data.description,
+        category: data.category,
+        features: data.features,
+        price: data.price,
+        revisions: data.revisions,
+        time: data.time,
+        shortDesc: data.shortDesc,
       };
-      const response = await axios.post(ADD_GIG_ROUTE, formData, {
-        withCredentials: true,
-        headers: {
-          "Content-Type": "multipart/form-data",
-          Authorization: `Bearer ${cookies.jwt}`,
-        },
-        params: gigData,
-      });
-      if (response.status === 201) {
-        router.push("/seller/gigs");
+      
+      try {
+        const response = await axios.post(ADD_GIG_ROUTE, formData, {
+          withCredentials: true,
+          headers: {
+            "Content-Type": "multipart/form-data",
+            Authorization: `Bearer ${cookies.jwt}`,
+          },
+          params: gigData,
+        });
+        if (response.status === 201) {
+          toast.success("Gig created successfully!");
+          router.push("/seller/gigs");
+        }
+      } catch (err) {
+        setError(err.response?.data?.message || "Something went wrong!");
+        toast.error("Failed to create gig. Please try again.");
+      } finally {
+        setLoading(false);
       }
+    } else {
+      toast.error("Please fill all required fields.");
+      setLoading(false);
     }
   };
+
   return (
-    <div className="min-h-[80vh] my-10 mt-0 px-32 ">
+    <div className="min-h-[80vh] my-10 mt-0 px-32">
+      <ToastContainer />
+      {loading && (
+        <div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50">
+          <div className="w-16 h-16 border-4 border-t-4 border-green-500 border-solid rounded-full animate-spin"></div>
+        </div>
+      )}
       <h1 className="text-6xl text-gray-900 mb-5">Create a new Gig</h1>
       <h3 className="text-3xl text-gray-900 mb-5">
         Enter the details to create the gig
       </h3>
-      <form action="" className="flex flex-col gap-5 mt-10">
+      <form className="flex flex-col gap-5 mt-10">
         <div className="grid grid-cols-2 gap-11">
           <div>
             <label htmlFor="title" className={labelClassName}>
@@ -179,29 +211,27 @@ function CreateGigs() {
               />
               <button
                 type="button"
-                className="focus:outline-none text-white bg-blue-700 hover:bg-blue-800  font-medium  text-lg px-10 py-3 rounded-md "
+                className="focus:outline-none text-white bg-blue-700 hover:bg-blue-800 font-medium text-lg px-10 py-3 rounded-md"
                 onClick={addFeature}
               >
                 Add
               </button>
             </div>
             <ul className="flex gap-2 flex-wrap">
-              {features.map((feature, index) => {
-                return (
-                  <li
-                    key={feature + index.toString()}
-                    className="flex gap-2 items-center py-2.5 px-5 mr-2 mb-2 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-red-700 cursor-pointer hover:border-red-200"
+              {features.map((feature, index) => (
+                <li
+                  key={feature + index.toString()}
+                  className="flex gap-2 items-center py-2.5 px-5 mr-2 mb-2 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-red-700 cursor-pointer hover:border-red-200"
+                >
+                  <span>{feature}</span>
+                  <span
+                    className="text-red-700"
+                    onClick={() => removeFeature(index)}
                   >
-                    <span>{feature}</span>
-                    <span
-                      className="text-red-700"
-                      onClick={() => removeFeature(index)}
-                    >
-                      X
-                    </span>
-                  </li>
-                );
-              })}
+                    X
+                  </span>
+                </li>
+              ))}
             </ul>
           </div>
           <div>
@@ -245,11 +275,11 @@ function CreateGigs() {
         </div>
         <div>
           <button
-            className="border   text-lg font-semibold px-5 py-3   border-[#1DBF73] bg-[#1DBF73] text-white rounded-md"
+            className="border text-lg font-semibold px-5 py-3 border-[#1DBF73] bg-[#1DBF73] text-white rounded-md"
             type="button"
             onClick={addGig}
           >
-            Create
+            {loading ? "Creating..." : "Create Gig"}
           </button>
         </div>
       </form>

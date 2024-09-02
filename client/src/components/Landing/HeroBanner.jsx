@@ -1,123 +1,67 @@
 import Image from "next/image";
 import { useRouter } from "next/router";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { IoSearchOutline } from "react-icons/io5";
+
 function HomeBanner() {
   const router = useRouter();
-  const [image, setImage] = useState(1);
   const [searchData, setSearchData] = useState("");
-  useEffect(() => {
-    const interval = setInterval(
-      () => setImage(image >= 6 ? 1 : image + 1),
-      10000
-    );
-    return () => clearInterval(interval);
-  }, [image]);
 
   return (
-    <div className="h-[680px] relative bg-cover">
-      <div className="absolute top-0 right-0 w-[110vw] h-full transition-opacity z-0">
-        <Image
-          alt="hero"
-          src="/bg-hero1.webp"
-          fill
-          className={`${
-            image === 1 ? "opacity-100" : "opacity-0"
-          } transition-all duration-1000`}
-        />
-        <Image
-          alt="hero"
-          src="/bg-hero2.webp"
-          fill
-          className={`${
-            image === 2 ? "opacity-100" : "opacity-0"
-          } transition-all duration-1000`}
-        />
-        <Image
-          alt="hero"
-          src="/bg-hero3.webp"
-          fill
-          className={`${
-            image === 3 ? "opacity-100" : "opacity-0"
-          } transition-all duration-1000`}
-        />
-        <Image
-          alt="hero"
-          src="/bg-hero4.webp"
-          fill
-          className={`${
-            image === 4 ? "opacity-100" : "opacity-0"
-          } transition-all duration-1000`}
-        />
-        <Image
-          alt="hero"
-          src="/bg-hero5.webp"
-          fill
-          className={`${
-            image === 5 ? "opacity-100" : "opacity-0"
-          } transition-all duration-1000`}
-        />
-        <Image
-          alt="hero"
-          src="/bg-hero6.webp"
-          fill
-          className={`${
-            image === 6 ? "opacity-100" : "opacity-0"
-          } transition-all duration-1000`}
-        />
-      </div>
-      <div className="z-10 relative w-[650px] flex justify-center flex-col h-full gap-5 ml-20">
-        <h1 className="text-white text-5xl leading-snug">
-          Find the perfect&nbsp;
-          <i>freelance</i>
+    <div className="relative h-[680px] bg-gradient-to-r from-black to-gray-800">
+    <div className="absolute inset-0 bg-gradient-to-r from-gray-900 via-black to-gray-900 opacity-40"></div>
+    <div className="absolute inset-0">
+  <svg
+    className="absolute top-0 left-0 w-full h-full object-cover"
+    xmlns="http://www.w3.org/2000/svg"
+    viewBox="-30 10 500 100" // Shift viewBox to the left and adjust the dimensions
+    fill="none"
+    style={{ transform: 'scaleX(1.0) scaleY(5.0)' }} // Make it thinner and longer
+  >
+    <path
+      d="M0,0 L100,0 L100,80 L50,60 L0,80 Z"
+      fill="#1DBF73" 
+    />
+  </svg>
+</div>
+
+      <div className="relative z-10 flex flex-col items-center justify-center w-full h-full px-6 md:px-12 lg:px-24 text-center">
+        <h1 className="text-white text-4xl md:text-5xl lg:text-6xl font-bold leading-tight mb-6">
+          Discover top&nbsp;
+          <span className="italic text-yellow-400">freelancers</span>
           <br />
-          services for your business
+          for your next project
         </h1>
-        <div className="flex align-middle">
-          <div className="relative">
-            <IoSearchOutline className="absolute text-gray-500 text-2xl flex align-middle h-full left-2" />
+        <div className="flex items-center justify-center mb-6">
+          <div className="relative w-full sm:w-[450px] flex items-center">
             <input
               type="text"
-              className="h-14 w-[450px] pl-10 rounded-md rounded-r-none"
-              placeholder={`Try "building mobile app"`}
+              className="w-full h-12 pl-12 pr-4 rounded-l-lg border border-gray-300 bg-white text-black placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-yellow-400 transition-all duration-300"
+              placeholder='Try "building a website"'
               value={searchData}
               onChange={(e) => setSearchData(e.target.value)}
             />
+            <IoSearchOutline className="absolute top-1/2 transform -translate-y-1/2 left-4 text-gray-500 text-xl" />
           </div>
           <button
-            className="bg-[#1DBF73] text-white px-12 text-lg font-semibold rounded-r-md"
+            className="bg-green-500 text-white px-6 py-3 text-lg font-semibold rounded-r-lg shadow-md hover:bg-green-600 transition-all duration-300"
             onClick={() => router.push(`/search?q=${searchData}`)}
           >
             Search
           </button>
         </div>
-        <div className="text-white flex gap-4">
-          Popular:
-          <ul className="flex gap-5">
-            <li
-              className="text-sm py-1 px-3 border rounded-full hover:bg-white hover:text-black transition-all duration-300	cursor-pointer"
-              onClick={() => router.push("/search?q=website design")}
-            >
-              Website Design
-            </li>
-            <li
-              className="text-sm py-1 px-3 border rounded-full hover:bg-white hover:text-black transition-all duration-300	cursor-pointer"
-              onClick={() => router.push("/search?q=wordpress")}
-            >
-              Wordpress
-            </li>
-            <li
-              className="text-sm py-1 px-3 border rounded-full hover:bg-white hover:text-black transition-all duration-300	cursor-pointer"
-              onClick={() => router.push("/search?q=logo design")}
-            >
-              Logo Design
-            </li>
-            <li
-              className="text-sm py-1 px-3 border rounded-full hover:bg-white hover:text-black transition-all duration-300	cursor-pointer"
-              onClick={() => router.push("/search?q=ai services")}
-            >
-              AI Services
-            </li>
+        <div className="text-white">
+          <p className="text-lg mb-2">Popular:</p>
+          <ul className="flex flex-wrap gap-4 justify-center">
+            {["Website Design", "Wordpress", "Logo Design", "AI Solutions"].map((item) => (
+              <li
+                key={item}
+                className="text-sm py-2 px-4 border border-white rounded-full cursor-pointer hover:bg-yellow-400 hover:text-black transition-all duration-300"
+                onClick={() => router.push(`/search?q=${item}`)}
+              >
+                {item}
+              </li>
+            ))}
           </ul>
         </div>
       </div>

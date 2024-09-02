@@ -1,7 +1,7 @@
 import React from 'react';
 import { FaLinkedin, FaGithub } from 'react-icons/fa';
 
-const Footer = () => {
+const WorkFooter = () => {
   return (
     <footer className="bg-black text-white py-8">
       <div className="container mx-auto px-6">
@@ -46,4 +46,4 @@ const Footer = () => {
   );
 };
 
-export default Footer;
+export default WorkFooter;

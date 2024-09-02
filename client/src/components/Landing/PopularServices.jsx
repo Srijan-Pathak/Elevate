@@ -2,9 +2,9 @@ import Image from "next/image";
 import { useRouter } from "next/router";
 import React from "react";
 
-function PopularServices() {
+function DiscountedServices() {
   const router = useRouter();
-  const popularServicesData = [
+  const discountedServicesData = [
     { name: "Ai Artists", label: "Add talent to AI", image: "/service1.png" },
     { name: "Logo Design", label: "Build your brand", image: "/service2.jpeg" },
     {
@@ -32,11 +32,11 @@ function PopularServices() {
   ];
   return (
     <div className="mx-20 my-16">
-      <h2 className="text-4xl mb-5 text-[#404145] font-bold">
-        Popular Services
+      <h2 className="text-3xl md:text-4xl lg:text-5xl mb-12 text-gray-800 font-bold leading-tight">
+        Exclusive Discounted Services
       </h2>
       <ul className="flex flex-wrap gap-16">
-        {popularServicesData.map(({ name, label, image }) => {
+        {discountedServicesData.map(({ name, label, image }) => {
           return (
             <li
               key={name}
@@ -47,7 +47,7 @@ function PopularServices() {
                 <span>{label}</span>
                 <h6 className="font-extrabold text-2xl">{name}</h6>
               </div>
-              <div className="h-80 w-72 ">
+              <div className="h-80 w-72">
                 <Image src={image} fill alt="service" />
               </div>
             </li>
@@ -58,4 +58,4 @@ function PopularServices() {
   );
 }
 
-export default PopularServices;
+export default DiscountedServices;

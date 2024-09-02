@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
-import FiverrLogo from "./FiverrLogo";
+import MyLogo from "./Logo";
 import Link from "next/link";
-import { IoSearchOutline } from "react-icons/io5";
 import { useRouter } from "next/router";
 import Image from "next/image";
 import { useCookies } from "react-cookie";
@@ -10,13 +9,13 @@ import { GET_USER_INFO, HOST } from "../utils/constants";
 import ContextMenu from "./ContextMenu";
 import { useStateProvider } from "../context/StateContext";
 import { reducerCases } from "../context/constants";
+import { FaStar, FaBriefcase, FaUserTie } from "react-icons/fa"; // Added icons
 
 function Navbar() {
   const [cookies] = useCookies();
   const router = useRouter();
   const [navFixed, setNavFixed] = useState(false);
-  const [searchData, setSearchData] = useState("");
-  const [isLoaded, setIsLoaded] = useState(false);
+  const [isLoaded, setIsLoaded] = useState(true);
   const [{ showLoginModal, showSignupModal, isSeller, userInfo }, dispatch] =
     useStateProvider();
 
@@ -47,11 +46,7 @@ function Navbar() {
   };
 
   const links = [
-    { linkName: "Fiverr Business", handler: "#", type: "link" },
-    { linkName: "Explore", handler: "#", type: "link" },
-    { linkName: "English", handler: "#", type: "link" },
-    { linkName: "Become a Seller", handler: "#", type: "link" },
-    { linkName: "Sign in", handler: handleLogin, type: "button" },
+    { linkName: "Log in", handler: handleLogin, type: "button" },
     { linkName: "Join", handler: handleSignup, type: "button2" },
   ];
 
@@ -75,10 +70,10 @@ function Navbar() {
   const handleModeSwitch = () => {
     if (isSeller) {
       dispatch({ type: reducerCases.SWITCH_MODE });
-      router.push("/buyer/orders");
+      router.push("/");
     } else {
       dispatch({ type: reducerCases.SWITCH_MODE });
-      router.push("/seller");
+      router.push("/work");
     }
   };
 
@@ -112,7 +107,6 @@ function Navbar() {
             userInfo: projectedUserInfo,
           });
           setIsLoaded(true);
-          console.log({ user });
           if (user.isProfileSet === false) {
             router.push("/profile");
           }
@@ -126,11 +120,11 @@ function Navbar() {
       setIsLoaded(true);
     }
   }, [cookies, userInfo, dispatch]);
+
   const [isContextMenuVisible, setIsContextMenuVisible] = useState(false);
   useEffect(() => {
     const clickListener = (e) => {
       e.stopPropagation();
-
       if (isContextMenuVisible) setIsContextMenuVisible(false);
     };
     if (isContextMenuVisible) {
@@ -140,12 +134,12 @@ function Navbar() {
       window.removeEventListener("click", clickListener);
     };
   }, [isContextMenuVisible]);
+
   const ContextMenuData = [
     {
       name: "Profile",
       callback: (e) => {
         e.stopPropagation();
-
         setIsContextMenuVisible(false);
         router.push("/profile");
       },
@@ -154,7 +148,6 @@ function Navbar() {
       name: "Logout",
       callback: (e) => {
         e.stopPropagation();
-
         setIsContextMenuVisible(false);
         router.push("/logout");
       },
@@ -165,131 +158,134 @@ function Navbar() {
     <>
       {isLoaded && (
         <nav
-          className={`w-full px-24 flex justify-between items-center py-6  top-0 z-30 transition-all duration-300 ${
+          className={`w-full px-4 flex justify-between items-center py-2 top-0 z-30 transition-all duration-300 ${
             navFixed || userInfo
-              ? "fixed bg-white border-b border-gray-200"
+              ? "fixed bg-black border-b border-gray-800 shadow-md"
               : "absolute bg-transparent border-transparent"
           }`}
         >
           <div>
             <Link href="/">
-              <FiverrLogo
-                fillColor={!navFixed && !userInfo ? "#ffffff" : "#404145"}
+              <MyLogo
+                fillColor={!navFixed && !userInfo ? "#ffffff" : "#ffffff"}
+                className="h-6"
               />
             </Link>
           </div>
-          <div
-            className={`flex ${
-              navFixed || userInfo ? "opacity-100" : "opacity-0"
-            }`}
-          >
-            <input
-              type="text"
-              placeholder="What service are you looking for today?"
-              className="w-[30rem] py-2.5 px-4 border"
-              value={searchData}
-              onChange={(e) => setSearchData(e.target.value)}
-            />
-            <button
-              className="bg-gray-900 py-1.5 text-white w-16 flex justify-center items-center"
-              onClick={() => {
-                setSearchData("");
-                router.push(`/search?q=${searchData}`);
-              }}
-            >
-              <IoSearchOutline className="fill-white text-white h-6 w-6" />
-            </button>
-          </div>
-          {!userInfo ? (
-            <ul className="flex gap-10 items-center">
-              {links.map(({ linkName, handler, type }) => {
-                return (
+          <ul className="flex gap-4 items-center relative">
+            <li className="relative group">
+              <button
+                className="flex items-center gap-2 text-yellow-400 font-semibold border border-yellow-400 py-1 px-3 rounded hover:bg-yellow-500 hover:text-white transition-colors duration-300"
+                onClick={() => router.push("/premium")}
+              >
+                <FaStar /> Buy Premium
+              </button>
+              <div className="absolute left-0 mt-2 w-48 bg-gray-800 text-white text-sm rounded-lg shadow-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                <div className="p-3">
+                  <p className="mb-2 font-semibold">Premium Benefits:</p>
+                  <ul className="list-disc list-inside">
+                    <li>Exclusive content</li>
+                    <li>Priority support</li>
+                    <li>Ad-free experience</li>
+                  </ul>
+                </div>
+              </div>
+            </li>
+            {userInfo ? (
+              <>
+                {isSeller && (
+                  <li
+                    className="cursor-pointer text-[#1DBF73] text-sm font-medium flex items-center gap-1 hover:text-green-400 transition-colors duration-300"
+                    onClick={() => router.push("/seller/gigs/create")}
+                  >
+                    <FaBriefcase />
+                    Create Gig
+                  </li>
+                )}
+                <li
+                  className="cursor-pointer text-[#1DBF73] text-sm font-medium flex items-center gap-1 hover:text-green-400 transition-colors duration-300"
+                  onClick={handleOrdersNavigate}
+                >
+                  <FaBriefcase />
+                  My Orders
+                </li>
+                {isSeller ? (
+                  <li
+                    className="cursor-pointer text-sm font-medium text-gray-300 flex items-center gap-2 transition-colors duration-300 hover:text-[#1DBF73]"
+                    onClick={handleModeSwitch}
+                  >
+                    <FaUserTie className="text-lg" /> Switch to Hiring
+                  </li>
+                ) : (
+                  <li
+                    className="cursor-pointer text-sm font-medium text-gray-300 flex items-center gap-2 transition-colors duration-300 hover:text-[#1DBF73]"
+                    onClick={handleModeSwitch}
+                  >
+                    <FaBriefcase className="text-lg" /> Looking for Work?
+                  </li>
+                )}
+                <li
+                  className="cursor-pointer"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setIsContextMenuVisible(true);
+                  }}
+                  title="Profile"
+                >
+                  {userInfo?.imageName ? (
+                    <Image
+                      src={userInfo.imageName}
+                      alt="Profile"
+                      width={28}
+                      height={28}
+                      className="rounded-full"
+                    />
+                  ) : (
+                    <div className="bg-purple-500 h-7 w-7 flex items-center justify-center rounded-full relative">
+                      <span className="text-sm text-white">
+                        {userInfo &&
+                          userInfo?.email &&
+                          userInfo?.email.split("")[0].toUpperCase()}
+                      </span>
+                    </div>
+                  )}
+                </li>
+              </>
+            ) : (
+              <>
+                {links.map(({ linkName, handler, type }) => (
                   <li
                     key={linkName}
                     className={`${
-                      navFixed ? "text-black" : "text-white"
+                      navFixed ? "text-white" : "text-gray-300"
                     } font-medium`}
                   >
                     {type === "link" && <Link href={handler}>{linkName}</Link>}
                     {type === "button" && (
-                      <button onClick={handler}>{linkName}</button>
+                      <button
+                        onClick={handler}
+                        className="text-white hover:text-gray-300 text-sm"
+                      >
+                        {linkName}
+                      </button>
                     )}
                     {type === "button2" && (
                       <button
                         onClick={handler}
-                        className={`border   text-md font-semibold py-1 px-3 rounded-sm ${
+                        className={`border text-sm font-semibold py-1 px-2 rounded-sm ${
                           navFixed
                             ? "border-[#1DBF73] text-[#1DBF73]"
-                            : "border-white text-white"
-                        } hover:bg-[#1DBF73] hover:text-white hover:border-[#1DBF73] transition-all duration-500`}
+                            : "border-gray-600 text-gray-300"
+                        } hover:bg-[#1DBF73] hover:text-white hover:border-[#1DBF73] transition-all duration-300`}
                       >
                         {linkName}
                       </button>
                     )}
                   </li>
-                );
-              })}
-            </ul>
-          ) : (
-            <ul className="flex gap-10 items-center">
-              {isSeller && (
-                <li
-                  className="cursor-pointer text-[#1DBF73] font-medium"
-                  onClick={() => router.push("/seller/gigs/create")}
-                >
-                  Create Gig
-                </li>
-              )}
-              <li
-                className="cursor-pointer text-[#1DBF73] font-medium"
-                onClick={handleOrdersNavigate}
-              >
-                Orders
-              </li>
-
-              {isSeller ? (
-                <li
-                  className="cursor-pointer font-medium"
-                  onClick={handleModeSwitch}
-                >
-                  Switch To Buyer
-                </li>
-              ) : (
-                <li
-                  className="cursor-pointer font-medium"
-                  onClick={handleModeSwitch}
-                >
-                  Switch To Seller
-                </li>
-              )}
-              <li
-                className="cursor-pointer"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setIsContextMenuVisible(true);
-                }}
-                title="Profile"
-              >
-                {userInfo?.imageName ? (
-                  <Image
-                    src={userInfo.imageName}
-                    alt="Profile"
-                    width={40}
-                    height={40}
-                    className="rounded-full"
-                  />
-                ) : (
-                  <div className="bg-purple-500 h-10 w-10 flex items-center justify-center rounded-full relative">
-                    <span className="text-xl text-white">
-                      {userInfo &&
-                        userInfo?.email &&
-                        userInfo?.email.split("")[0].toUpperCase()}
-                    </span>
-                  </div>
-                )}
-              </li>
-            </ul>
-          )}
+                ))}
+              </>
+            )}
+          </ul>
           {isContextMenuVisible && <ContextMenu data={ContextMenuData} />}
         </nav>
       )}

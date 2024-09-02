@@ -16,8 +16,9 @@ function Profile() {
   const [{ userInfo }, dispatch] = useStateProvider();
   const [isLoaded, setIsLoaded] = useState(false);
   const [imageHover, setImageHover] = useState(false);
-  const [image, setImage] = useState(undefined);
+  const [image, setImage] = useState(null);
   const [errorMessage, setErrorMessage] = useState("");
+  const [loading, setLoading] = useState(false);
   const [data, setData] = useState({
     userName: "",
     fullName: "",
@@ -25,116 +26,137 @@ function Profile() {
   });
 
   useEffect(() => {
-    const handleData = { ...data };
     if (userInfo) {
-      if (userInfo?.username) handleData.userName = userInfo?.username;
-      if (userInfo?.description) handleData.description = userInfo?.description;
-      if (userInfo?.fullName) handleData.fullName = userInfo?.fullName;
-      console.log({ userInfo });
+      setData({
+        userName: userInfo.username || "",
+        fullName: userInfo.fullName || "",
+        description: userInfo.description || "",
+      });
 
-      if (userInfo?.imageName) {
-        const fileName = image;
+      if (userInfo.imageName) {
         fetch(userInfo.imageName).then(async (response) => {
           const contentType = response.headers.get("content-type");
           const blob = await response.blob();
-          // @ts-ignore
-          const files = new File([blob], fileName, { contentType });
-          // @ts-ignore
-          setImage(files);
+          const file = new File([blob], userInfo.imageName, { type: contentType });
+          setImage(file);
         });
       }
 
-      setData(handleData);
       setIsLoaded(true);
     }
   }, [userInfo]);
 
-  const handleFile = (e) => {
-    let file = e.target.files;
-    const fileType = file[0]["type"];
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
     const validImageTypes = ["image/gif", "image/jpeg", "image/png"];
-    if (validImageTypes.includes(fileType)) {
-      setImage(file[0]);
+    if (file && validImageTypes.includes(file.type)) {
+      setImage(file);
+    } else {
+      setErrorMessage("Please select a valid image file (jpg, png, gif).");
     }
   };
+
   const handleChange = (e) => {
     setData({ ...data, [e.target.name]: e.target.value });
   };
 
   const setProfile = async () => {
-    try {
-      const response = await axios.post(
-        SET_USER_INFO,
-        { ...data },
-        { withCredentials: true }
-      );
-      if (response.data.userNameError) {
-        setErrorMessage("Enter a Unique Username");
-      } else {
-        let imageName = "";
-        if (image) {
-          const formData = new FormData();
-          formData.append("images", image);
-          const {
-            data: { img },
-          } = await axios.post(SET_USER_IMAGE, formData, {
-            withCredentials: true,
-            headers: {
-              "Content-Type": "multipart/form-data",
-            },
-          });
-          imageName = img;
-        }
+    setLoading(true);
+    setErrorMessage("");
 
-        dispatch({
-          type: reducerCases.SET_USER,
-          userInfo: {
-            ...userInfo,
-            ...data,
-            image: imageName.length ? HOST + "/" + imageName : false,
+    try {
+      const payload = { ...data };
+      
+      // Check if the username is the same as the existing one
+      if (userInfo.username === data.userName) {
+        // Send the profile update request without checking for username conflicts
+        await axios.post(
+          SET_USER_INFO,
+          payload,
+          { withCredentials: true }
+        );
+      } else {
+        // Check for username conflicts
+        const response = await axios.post(
+          SET_USER_INFO,
+          payload,
+          { withCredentials: true }
+        );
+
+        if (response.data.userNameError) {
+          setErrorMessage("Username already taken. Please choose another.");
+          setLoading(false);
+          return;
+        }
+      }
+
+      let imageName = "";
+      if (image) {
+        const formData = new FormData();
+        formData.append("images", image);
+        const {
+          data: { img },
+        } = await axios.post(SET_USER_IMAGE, formData, {
+          withCredentials: true,
+          headers: {
+            "Content-Type": "multipart/form-data",
           },
         });
-
-        router.push("/");
+        imageName = img;
       }
+
+      dispatch({
+        type: reducerCases.SET_USER,
+        userInfo: {
+          ...userInfo,
+          ...data,
+          image: imageName ? `${HOST}/${imageName}` : userInfo.image,
+        },
+      });
+
+      router.push("/");
     } catch (err) {
-      console.error(err);
+      console.error("Profile update failed:", err);
+      setErrorMessage("An error occurred while updating your profile. Please try again.");
+    } finally {
+      setLoading(false);
     }
   };
 
   const inputClassName =
-    "block p-4 w-full text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50  focus:ring-blue-500 focus:border-blue-500";
-  const labelClassName =
-    "mb-2 text-lg font-medium text-gray-900  dark:text-white";
+    "block p-4 w-full text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500";
+  const labelClassName = "mb-2 text-lg font-medium text-gray-900";
+
+  // Skeleton Loader Styles
+  const skeletonClassName = "animate-pulse bg-gray-200 rounded-lg";
+
   return (
     <>
-      {isLoaded && (
-        <div className="flex flex-col items-center justify-start min-h-[80vh] gap-3">
+      {isLoaded ? (
+        <div className="flex flex-col items-center justify-start min-h-[80vh] gap-6">
           {errorMessage && (
-            <div>
-              <span className="text-red-600 font-bold">{errorMessage}</span>
-            </div>
+            <div className="text-red-600 font-bold">{errorMessage}</div>
           )}
-          <h2 className="text-3xl">Welocme to Fiverr Clone</h2>
-          <h4 className="text-xl">
+          <h2 className="text-3xl font-bold">Welcome to Elevate !</h2>
+          <h4 className="text-xl font-medium text-gray-700">
             Please complete your profile to get started
           </h4>
           <div className="flex flex-col items-center w-full gap-5">
             <div
-              className="flex flex-col items-center cursor-pointer"
+              className="relative flex flex-col items-center cursor-pointer"
               onMouseEnter={() => setImageHover(true)}
               onMouseLeave={() => setImageHover(false)}
             >
-              <label className={labelClassName} htmlFor="">
-                Select a profile Picture
+              <label className={labelClassName} htmlFor="profileImage">
+                Select a Profile Picture
               </label>
               <div className="bg-purple-500 h-36 w-36 flex items-center justify-center rounded-full relative">
                 {image ? (
                   <Image
                     src={URL.createObjectURL(image)}
-                    alt="profile"
+                    alt="Profile"
                     fill
-                    className="rounded-full"
+                    className="rounded-full object-cover"
                   />
                 ) : (
                   <span className="text-6xl text-white">
@@ -142,13 +164,11 @@ function Profile() {
                   </span>
                 )}
                 <div
-                  className={`absolute bg-slate-400 h-full w-full rounded-full flex items-center justify-center   transition-all duration-100  ${
-                    imageHover ? "opacity-100" : "opacity-0"
+                  className={`absolute bg-slate-400 h-full w-full rounded-full flex items-center justify-center transition-opacity duration-200 ${
+                    imageHover ? "opacity-80" : "opacity-0"
                   }`}
                 >
-                  <span
-                    className={` flex items-center justify-center  relative`}
-                  >
+                  <span className="relative">
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
                       className="w-12 h-12 text-white absolute"
@@ -163,19 +183,20 @@ function Profile() {
                     </svg>
                     <input
                       type="file"
-                      onChange={handleFile}
+                      id="profileImage"
+                      onChange={handleFileChange}
                       className="opacity-0"
-                      multiple={true}
-                      name="profileImage"
+                      accept="image/*"
                     />
                   </span>
                 </div>
               </div>
             </div>
-            <div className="flex gap-4 w-[500px]">
-              <div>
+
+            <div className="flex flex-col w-full md:flex-row md:gap-4 md:w-[600px]">
+              <div className="flex-1">
                 <label className={labelClassName} htmlFor="userName">
-                  Please select a username
+                  Username
                 </label>
                 <input
                   className={inputClassName}
@@ -187,10 +208,9 @@ function Profile() {
                   onChange={handleChange}
                 />
               </div>
-
-              <div>
+              <div className="flex-1">
                 <label className={labelClassName} htmlFor="fullName">
-                  Please enter your full Name
+                  Full Name
                 </label>
                 <input
                   className={inputClassName}
@@ -203,7 +223,8 @@ function Profile() {
                 />
               </div>
             </div>
-            <div className="flex flex-col w-[500px]">
+
+            <div className="flex flex-col w-full md:w-[600px]">
               <label className={labelClassName} htmlFor="description">
                 Description
               </label>
@@ -212,18 +233,33 @@ function Profile() {
                 id="description"
                 value={data.description}
                 onChange={handleChange}
-                className={inputClassName}
-                placeholder="description"
+                className={`${inputClassName} h-24 resize-none`}
+                placeholder="Tell us about yourself"
               ></textarea>
             </div>
+
             <button
-              className="border   text-lg font-semibold px-5 py-3   border-[#1DBF73] bg-[#1DBF73] text-white rounded-md"
+              className={`border text-lg font-semibold px-6 py-3 rounded-md transition-all duration-200 ${
+                loading
+                  ? "bg-gray-500 text-white cursor-not-allowed"
+                  : "bg-[#1DBF73] text-white hover:bg-[#17a363]"
+              }`}
               type="button"
               onClick={setProfile}
+              disabled={loading}
             >
-              Set Profile
+              {loading ? "Updating..." : "Set Profile"}
             </button>
           </div>
+        </div>
+      ) : (
+        <div className="flex flex-col items-center justify-start min-h-[80vh] gap-6">
+          <div className={`${skeletonClassName} h-8 w-64 mb-4`} />
+          <div className={`${skeletonClassName} h-8 w-64 mb-4`} />
+          <div className={`${skeletonClassName} h-36 w-36 mb-4`} />
+          <div className={`${skeletonClassName} h-12 w-full mb-4`} />
+          <div className={`${skeletonClassName} h-12 w-full mb-4`} />
+          <div className={`${skeletonClassName} h-24 w-full`} />
         </div>
       )}
     </>

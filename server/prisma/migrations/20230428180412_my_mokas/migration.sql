@@ -1,18 +1,18 @@
 -- CreateTable
-CREATE TABLE "User" (
-    "id" SERIAL NOT NULL,
-    "email" TEXT NOT NULL,
-    "password" TEXT NOT NULL,
-    "isSocialLogin" BOOLEAN DEFAULT false,
-    "username" TEXT,
-    "fullName" TEXT,
-    "description" TEXT,
-    "profileImage" TEXT,
-    "isProfileInfoSet" BOOLEAN DEFAULT false,
-    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+-- CREATE TABLE "User" (
+--     "id" SERIAL NOT NULL,
+--     "email" TEXT NOT NULL,
+--     "password" TEXT NOT NULL,
+--     "isSocialLogin" BOOLEAN DEFAULT false,
+--     "username" TEXT,
+--     "fullName" TEXT,
+--     "description" TEXT,
+--     "profileImage" TEXT,
+--     "isProfileInfoSet" BOOLEAN DEFAULT false,
+--     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
-    CONSTRAINT "User_pkey" PRIMARY KEY ("id")
-);
+--     CONSTRAINT "User_pkey" PRIMARY KEY ("id")
+-- );
 
 -- CreateTable
 CREATE TABLE "Gigs" (
