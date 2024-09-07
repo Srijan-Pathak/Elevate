@@ -24,20 +24,20 @@ This project was developed as part of the **Hackathon** for the theme of **Smart
 ## 📸 Screenshots & Functionalities
 
 ### 1. Gig Management System
-![Gig Management System](assets/images/gig_management.png)
+![Gig Management System](assets/images/AllGigs.png)
 - Create, edit, and manage freelance gigs with ease using the intuitive interface.
 
 ### 2. Real-time Messaging
-![Real-time Messaging](assets/images/chat_feature.png)
+![Real-time Messaging](assets/images/ChatFeature.png)
 - Seamless chat between freelancers and clients, supporting up to 2,000 messages daily.
 
 ### 3. AI-Powered Gig Analysis
-![AI-Powered Analysis](assets/images/ai_analysis.png)
+![AI-Powered Analysis](assets/images/GigCard.png)
 - Analyze and receive suggestions on gig quality based on pricing and reviews, powered by AI.
 
-### 4. Secure Stripe Payments
-![Secure Payments](assets/images/secure_payments.png)
-- Handle transactions securely with Stripe integration, ensuring trust and transparency.
+### 4. Gig Reviews
+![Gig Reviews](assets/images/Gig.png)
+- Users can leave and read reviews for gigs, helping to build trust and improve the quality of freelance services. The review system provides valuable feedback for both freelancers and clients.
 
 
 
