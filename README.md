@@ -1,8 +1,8 @@
 # ELEVATE | Freelancing Platform
 
-Welcome to **ELEVATE**, a dynamic freelancing platform developed for a hackathon under the **Punjab Skill Development Mission (PSDM)**. This platform connects freelancers with short-term and project-based opportunities, offering powerful tools for gig management and AI-driven recommendations.
+Welcome to **ELEVATE**, a freelancing platform developed for the **Smart India Hackathon 2024 (SIH)**. This platform connects freelancers with short-term and project-based opportunities, offering powerful tools for gig management and AI-driven recommendations.
 
-![Elevate](path_to_web_app_image.png)
+![Elevate](assets/images/Homepage.png)
 
 ## 🚀 Features
 - **Gig Management System**: Built using **Next.js** and **Express.js**, allowing users to create, edit, and manage freelance gigs seamlessly.
@@ -14,16 +14,69 @@ Welcome to **ELEVATE**, a dynamic freelancing platform developed for a hackathon
 - **Frontend**: Next.js, React.js, Tailwind CSS
 - **Backend**: Node.js, Express.js, PostgreSQL, Prisma
 - **Payments**: Stripe
-- **AI**: ChatGPT API
+- **AI**: OpenAI API
 
 ## 🎯 Hackathon Problem Statement
-![Problem Statement](path_to_problem_statement_image.png)
+![Problem Statement](assets/images/ProblemStatement.png)
 
 This project was developed as part of the **Hackathon** for the theme of **Smart Education**, focused on solving real-world freelancing challenges.
+
+## 📸 Screenshots & Functionalities
+
+### 1. Gig Management System
+![Gig Management System](assets/images/gig_management.png)
+- Create, edit, and manage freelance gigs with ease using the intuitive interface.
+
+### 2. Real-time Messaging
+![Real-time Messaging](assets/images/chat_feature.png)
+- Seamless chat between freelancers and clients, supporting up to 2,000 messages daily.
+
+### 3. AI-Powered Gig Analysis
+![AI-Powered Analysis](assets/images/ai_analysis.png)
+- Analyze and receive suggestions on gig quality based on pricing and reviews, powered by AI.
+
+### 4. Secure Stripe Payments
+![Secure Payments](assets/images/secure_payments.png)
+- Handle transactions securely with Stripe integration, ensuring trust and transparency.
+
+
 
 ## ⚙️ Installation & Setup
 
 1. **Clone the repository**
    ```bash
-   git clone https://github.com/yourusername/elevate-freelancing-platform.git
-   cd elevate-freelancing-platform
+   git clone https://github.com/srijanpathak03/Elevate.git
+   cd Elevate
+
+2. **Install dependencies**
+    ```bash
+    yarn install
+    ```
+
+3. **Setup Prisma**
+    ```bash
+    npx prisma generate
+    npx prisma migrate dev
+    ```
+
+4. **Environment Variables**
+
+Create a .env file in the server directory and add your environment variables:
+    ```
+    DATABASE_URL=your_postgres_url
+    STRIPE_SECRET_KEY=your_stripe_key
+    OPENAI_API_KEY=your_api_key
+    ```
+    
+5. **Run the development server**
+
+    ```bash
+    cd server
+    yarn run dev
+    ```
+6. **Run the NextJS server**
+
+    ```bash
+    cd client
+    yarn run dev
+    ```
