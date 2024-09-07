@@ -80,3 +80,25 @@ Create a .env file in the server directory and add your environment variables:
     cd client
     yarn run dev
     ```
+## 🤝 Contributing
+
+We welcome contributions to **ELEVATE**! If you’d like to contribute, feel free to fork the repository and submit a pull request. You can also open issues for suggestions, feature requests, or bugs.
+
+1. **Fork the repository**
+2. **Create a new branch**
+   ```bash
+   git checkout -b feature-branch
+   ```
+3. **Make your changes**
+  
+4. **Commit your changes**
+    ```bash
+    git commit -m "Describe your changes"
+    ```
+5. **Push to the branch and open a PR**
+    ```bash
+    git push origin feature-branch
+    ```  
+
+   
+We appreciate your contributions to improve the platform! ❤️
